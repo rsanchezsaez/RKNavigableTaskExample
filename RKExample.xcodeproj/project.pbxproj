@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BC8BB75B1B0BCBCD004CED33 /* APHExerciseCheckinTask.m in Sources */ = {isa = PBXBuildFile; fileRef = BC8BB7591B0BCB92004CED33 /* APHExerciseCheckinTask.m */; };
 		BCAC2ABD1AEAB97E0058F2B0 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BCAC2ABC1AEAB97E0058F2B0 /* main.m */; };
 		BCAC2AC01AEAB97E0058F2B0 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BCAC2ABF1AEAB97E0058F2B0 /* AppDelegate.m */; };
 		BCAC2AC31AEAB97E0058F2B0 /* MainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BCAC2AC21AEAB97E0058F2B0 /* MainViewController.m */; };
@@ -54,6 +55,8 @@
 
 /* Begin PBXFileReference section */
 		BC8BB74E1B0BCA65004CED33 /* ResearchKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ResearchKit.xcodeproj; path = ResearchKit/ResearchKit.xcodeproj; sourceTree = "<group>"; };
+		BC8BB7581B0BCB92004CED33 /* APHExerciseCheckinTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = APHExerciseCheckinTask.h; sourceTree = "<group>"; };
+		BC8BB7591B0BCB92004CED33 /* APHExerciseCheckinTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = APHExerciseCheckinTask.m; sourceTree = "<group>"; };
 		BCAC2AB71AEAB97D0058F2B0 /* RKExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RKExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCAC2ABB1AEAB97E0058F2B0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BCAC2ABC1AEAB97E0058F2B0 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -125,6 +128,8 @@
 		BCAC2AB91AEAB97D0058F2B0 /* RKExample */ = {
 			isa = PBXGroup;
 			children = (
+				BC8BB7581B0BCB92004CED33 /* APHExerciseCheckinTask.h */,
+				BC8BB7591B0BCB92004CED33 /* APHExerciseCheckinTask.m */,
 				BCAC2ABE1AEAB97E0058F2B0 /* AppDelegate.h */,
 				BCAC2ABF1AEAB97E0058F2B0 /* AppDelegate.m */,
 				BCAC2AC11AEAB97E0058F2B0 /* MainViewController.h */,
@@ -285,6 +290,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BC8BB75B1B0BCBCD004CED33 /* APHExerciseCheckinTask.m in Sources */,
 				BCAC2AC31AEAB97E0058F2B0 /* MainViewController.m in Sources */,
 				BCAC2AC01AEAB97E0058F2B0 /* AppDelegate.m in Sources */,
 				BCAC2ABD1AEAB97E0058F2B0 /* main.m in Sources */,

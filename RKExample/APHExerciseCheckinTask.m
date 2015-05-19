@@ -126,58 +126,59 @@ static NSInteger const kMaxTextInput        = 300;
 
 - (NSDictionary*)mostRecentReasons
 {
-    NSDictionary*       result      = nil;
-    NSString*           taskId      = kMotivatorTaskID;
-    APCAppDelegate*     appDelegate = (APCAppDelegate*)[[UIApplication sharedApplication] delegate];
-    NSSortDescriptor*   sortDescriptor = [[NSSortDescriptor alloc] initWithKey:kAPCTaskAttributeUpdatedAt
-                                                                   ascending:NO];
-    NSFetchRequest*     request     = [APCScheduledTask request];
-    NSPredicate*        predicate   = [NSPredicate predicateWithFormat:@"(task.taskID == %@) AND (completed == YES)", taskId];
-
-    request.predicate       = predicate;
-    request.sortDescriptors = @[sortDescriptor];
-    
-    NSError*            error       = nil;
-    NSArray*            tasks       = [appDelegate.dataSubstrate.mainContext executeFetchRequest:request
-                                                                                           error:&error];
-    
-    if (tasks == nil)
-    {
-        if (error)
-        {
-            APCLogError2(error);
-        }
-    }
-    else
-    {
-        APCScheduledTask*   task            = [tasks firstObject];
-        NSArray*            schedTaskResult = [task.results allObjects];
-        NSSortDescriptor* sorDescrip        = [[NSSortDescriptor alloc] initWithKey:kAPCTaskAttributeUpdatedAt
-                                                                      ascending:NO];
-        NSArray*            taskResults     = [schedTaskResult sortedArrayUsingDescriptors:@[sorDescrip]];
-        NSString*           resultSummary   = nil;
-        APCResult*          recentResult    = [taskResults firstObject];
-        
-        resultSummary = [recentResult resultSummary];
-        
-        if (resultSummary)
-        {
-            NSData*     resultData  = [resultSummary dataUsingEncoding:NSUTF8StringEncoding];
-            NSError*    error       = nil;
-
-            result = [NSJSONSerialization JSONObjectWithData:resultData options:0 error:&error];
-
-            if (result == nil)
-            {
-                if (error)
-                {
-                    APCLogError2(error);
-                }
-            }
-        }
-    }
-    
-    return result;
+//    NSDictionary*       result      = nil;
+//    NSString*           taskId      = kMotivatorTaskID;
+//    APCAppDelegate*     appDelegate = (APCAppDelegate*)[[UIApplication sharedApplication] delegate];
+//    NSSortDescriptor*   sortDescriptor = [[NSSortDescriptor alloc] initWithKey:kAPCTaskAttributeUpdatedAt
+//                                                                   ascending:NO];
+//    NSFetchRequest*     request     = [APCScheduledTask request];
+//    NSPredicate*        predicate   = [NSPredicate predicateWithFormat:@"(task.taskID == %@) AND (completed == YES)", taskId];
+//
+//    request.predicate       = predicate;
+//    request.sortDescriptors = @[sortDescriptor];
+//    
+//    NSError*            error       = nil;
+//    NSArray*            tasks       = [appDelegate.dataSubstrate.mainContext executeFetchRequest:request
+//                                                                                           error:&error];
+//    
+//    if (tasks == nil)
+//    {
+//        if (error)
+//        {
+//            APCLogError2(error);
+//        }
+//    }
+//    else
+//    {
+//        APCScheduledTask*   task            = [tasks firstObject];
+//        NSArray*            schedTaskResult = [task.results allObjects];
+//        NSSortDescriptor* sorDescrip        = [[NSSortDescriptor alloc] initWithKey:kAPCTaskAttributeUpdatedAt
+//                                                                      ascending:NO];
+//        NSArray*            taskResults     = [schedTaskResult sortedArrayUsingDescriptors:@[sorDescrip]];
+//        NSString*           resultSummary   = nil;
+//        APCResult*          recentResult    = [taskResults firstObject];
+//        
+//        resultSummary = [recentResult resultSummary];
+//        
+//        if (resultSummary)
+//        {
+//            NSData*     resultData  = [resultSummary dataUsingEncoding:NSUTF8StringEncoding];
+//            NSError*    error       = nil;
+//
+//            result = [NSJSONSerialization JSONObjectWithData:resultData options:0 error:&error];
+//
+//            if (result == nil)
+//            {
+//                if (error)
+//                {
+//                    APCLogError2(error);
+//                }
+//            }
+//        }
+//    }
+//    
+//    return result;
+    return nil;
 }
 
 - (NSString*)imageName:(NSDictionary*)motivatorResults
@@ -193,7 +194,7 @@ static NSInteger const kMaxTextInput        = 300;
     return goalImages[key];
 }
 
-- (instancetype) init
+- (instancetype)init
 {
     NSMutableArray* steps = [NSMutableArray array];
     
@@ -216,8 +217,9 @@ static NSInteger const kMaxTextInput        = 300;
         [steps addObject:step];
     }
     
-    if (motivatorResults)
-    {
+//    if (motivatorResults)
+    if (YES)
+  {
         {
             NSArray*                    textChoices         = @[NSLocalizedString(kUserSucceededChoice, nil),
                                                                 NSLocalizedString(kUserFailedChoice, nil),

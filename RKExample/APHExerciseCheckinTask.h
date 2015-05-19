@@ -32,7 +32,6 @@
 //
 
 #import <ResearchKit/ResearchKit.h>
-@import  APCAppCore;
 
 @interface APHExerciseCheckinTask : ORKOrderedTask <ORKTask>
 
