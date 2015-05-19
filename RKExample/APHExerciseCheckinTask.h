@@ -33,6 +33,6 @@
 
 #import <ResearchKit/ResearchKit.h>
 
-@interface APHExerciseCheckinTask : ORKOrderedTask <ORKTask>
+@interface APHExerciseCheckinTask : ORKNavigableOrderedTask <ORKTask>
 
 @end

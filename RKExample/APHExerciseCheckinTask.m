@@ -51,17 +51,6 @@ static NSString* const kAPCTaskAttributeUpdatedAt   = @"updatedAt";
 //  task identifier
 static NSString* const kExerciseCheckInID   = @"Weekly Exercise Check-in";
 
-//  step index
-static NSInteger const kNegativeStepIndex      = -1;
-static NSString* const kInstructionStepIndex   = @"0";
-static NSString* const kUserProgressStepIndex  = @"1";
-static NSString* const kUserSucceededStepIndex = @"2";
-static NSString* const kUserInputStepIndex     = @"4";
-static NSString* const kUserFailedStepIndex    = @"3";
-static NSString* const kUserUncertainIndex     = @"5";
-static NSString* const kReasonsStepIndex       = @"6";
-static NSString* const kReasonsTwoStepIndex    = @"7";
-
 //  step identifiers
 static NSString* const kInstructionStepID   = @"instruction";
 static NSString* const kUserProgressStepID  = @"progress";
@@ -70,7 +59,6 @@ static NSString* const kUserFailedStepID    = @"failure";
 static NSString* const kUserInputStepID     = @"failure.reason";
 static NSString* const kUserUncertainID     = @"uncertain";
 static NSString* const kReasonsStepID       = @"reasons";
-static NSString* const kReasonsTwoStepID    = @"reasons.two";
 
 //  localized text
 static NSString* const kInstructionTitle    = @"Exercise Motivator Check-in";
@@ -290,273 +278,51 @@ static NSInteger const kMaxTextInput        = 300;
             
             [steps addObject:step];
         }
-        {
-            ORKInstructionStep* step = [[ORKInstructionStep alloc] initWithIdentifier:kReasonsTwoStepID];
-            
-            step.title      = NSLocalizedString(@"No reason", nil);
-            step.detailText = NSLocalizedString(@"None at all", nil);
-            
-            [steps addObject:step];
-        }
     }
     
     self = [super initWithIdentifier:kExerciseCheckInID steps:steps];
+    if (self) {
+
+        NSArray *resultPredicates = nil;
+        NSArray *matchingStepIdentifiers = nil;
+        ORKStepNavigationRule *navigationRule = nil;
+        
+        // Depth 2
+        resultPredicates = @[ [ORKResultPredicate predicateForChoiceQuestionResultWithResultIdentifier:kUserProgressStepID
+                                                                                        expectedString:kUserSucceededChoice],
+                              [ORKResultPredicate predicateForChoiceQuestionResultWithResultIdentifier:kUserProgressStepID
+                                                                                        expectedString:kUserFailedChoice],
+                              [ORKResultPredicate predicateForChoiceQuestionResultWithResultIdentifier:kUserProgressStepID
+                                                                                        expectedString:kUserUncertainChoice] ];
+        matchingStepIdentifiers = @[ kUserSucceededStepID,
+                                     kUserFailedStepID,
+                                     kUserUncertainID ];
+        
+        navigationRule = [[ORKPredicateStepNavigationRule alloc] initWithResultPredicates:resultPredicates
+                                                                  matchingStepIdentifiers:matchingStepIdentifiers];
+        
+        [self setNavigationRule:navigationRule forTriggerStepIdentifier:kUserProgressStepID];
+        
+        // Depth 3
+        resultPredicates = @[ [ORKResultPredicate predicateForChoiceQuestionResultWithResultIdentifier:kUserFailedStepID
+                                                                                        expectedString:kUserReasonsChoice],
+                              [ORKResultPredicate predicateForChoiceQuestionResultWithResultIdentifier:kUserFailedStepID
+                                                                                        expectedString:kUserInformation] ];
+        matchingStepIdentifiers = @[ kReasonsStepID,
+                                     kUserInputStepID ];
+        
+        navigationRule = [[ORKPredicateStepNavigationRule alloc] initWithResultPredicates:resultPredicates
+                                                                  matchingStepIdentifiers:matchingStepIdentifiers];
+     
+        [self setNavigationRule:navigationRule forTriggerStepIdentifier:kUserFailedStepID];
+        
+        // End task after kUserSucceededStepID and kUserInputStepID (it already automatically ends after kReasonsStepID)
+        navigationRule = [[ORKDirectStepNavigationRule alloc] initWithDestinationStepIdentifier:nil];
+        [self setNavigationRule:navigationRule forTriggerStepIdentifier:kUserSucceededStepID];
+        [self setNavigationRule:navigationRule forTriggerStepIdentifier:kUserInputStepID];
+    }
     
     return self;
-}
-
-- (nullable ORKStep *)stepAfterStep:(nullable ORKStep *)step withResult:(ORKTaskResult *)result
-{
-    self.lastStep = step;
-    
-    NSInteger stepIndex = 0;
-    
-    NSInteger(^DetermineStepDepth)(ORKStep*, ORKTaskResult*) = ^NSInteger(ORKStep* step, ORKTaskResult* __unused result)
-    {
-        NSInteger depth = 0;
-        
-        if ([step.identifier isEqualToString:kInstructionStepID])
-        {
-            depth = 1;
-        }
-        else if ([step.identifier isEqualToString:kUserProgressStepID])
-        {
-            depth = 2;
-        }
-        else if ([step.identifier isEqualToString:kUserSucceededStepID] || [step.identifier isEqualToString:kUserFailedStepID] || [step.identifier isEqualToString:kUserUncertainID])
-        {
-            depth = 3;
-        }
-        else if ([step.identifier isEqualToString:kUserInputStepID])
-        {
-            depth = 4;
-        }
-        
-        return depth;
-    };
-    
-    NSInteger(^DepthTwoResult)(ORKStep*, ORKTaskResult*) = ^NSInteger(ORKStep* step, ORKTaskResult* result)
-    {
-        NSInteger stepIndex = kNegativeStepIndex;
-        
-        ORKStepResult* stepResult = (ORKStepResult*)[result resultForIdentifier:step.identifier];
-        
-        if (stepResult)
-        {
-            ORKChoiceQuestionResult* choiceResult = (ORKChoiceQuestionResult*)[stepResult firstResult];
-            
-            if (choiceResult.choiceAnswers)
-            {
-                NSArray* answers        = choiceResult.choiceAnswers;
-                NSArray* textChoices    = @[NSLocalizedString(kUserSucceededChoice, nil),
-                                            NSLocalizedString(kUserFailedChoice, nil),
-                                            NSLocalizedString(kUserUncertainChoice, nil)];
-                NSInteger index         = [textChoices indexOfObject:[answers firstObject]];
-                
-                //  Based on the selected answer lead the user to the correct step
-                switch (index) {
-                    case 0:
-                    {
-                        stepIndex = [kUserSucceededStepIndex integerValue];
-                        break;
-                    }
-                    case 1:
-                    {
-                        stepIndex = [kUserFailedStepIndex integerValue];
-                        break;
-                    }
-                    case 2:
-                    {
-                        stepIndex = [kUserUncertainIndex integerValue];
-                        break;
-                    }
-                    default:
-                        break;
-                }
-            }
-        }
-        
-        return stepIndex;
-    };
-    
-    NSInteger(^DepthThreeResult)(ORKStep*, ORKTaskResult*) = ^NSInteger(ORKStep* step, ORKTaskResult* result)
-    {
-        NSInteger stepIndex = kNegativeStepIndex;
-        
-        if ([step.identifier isEqualToString:kUserFailedStepID])
-        {
-            ORKStepResult* stepResult = (ORKStepResult*)[result resultForIdentifier:step.identifier];
-            
-            if (stepResult)
-            {
-                ORKChoiceQuestionResult* choiceResult = (ORKChoiceQuestionResult*)[stepResult firstResult];
-                
-                if (choiceResult.choiceAnswers)
-                {
-                    NSArray* answers        = choiceResult.choiceAnswers;
-                    NSArray* textChoices    = @[NSLocalizedString(kUserReasonsChoice, nil),
-                                                NSLocalizedString(kUserInformation, nil)];
-                    NSInteger index         = [textChoices indexOfObject:[answers firstObject]];
-                    
-                    //  Based on the selected answer lead the user to the correct step
-                    switch (index) {
-                        case 0:
-                        {
-                            stepIndex = [kReasonsStepIndex integerValue];
-                            break;
-                        }
-                        case 1:
-                        {
-                            stepIndex = [kUserInputStepIndex integerValue];
-                            break;
-                        }
-                        default:
-                            break;
-                    }
-                }
-            }
-        }
-        else if ([step.identifier isEqualToString:kUserUncertainID])
-        {
-            ORKStepResult* stepResult = (ORKStepResult*)[result resultForIdentifier:step.identifier];
-            
-            if (stepResult)
-            {
-                ORKChoiceQuestionResult* choiceResult = (ORKChoiceQuestionResult*)[stepResult firstResult];
-                
-                if (choiceResult.choiceAnswers)
-                {
-                    NSArray*    answers     = choiceResult.choiceAnswers;
-                    NSArray*    textChoices = @[NSLocalizedString(kUserReasonsChoice, nil)];
-                    NSInteger   index       = [textChoices indexOfObject:[answers firstObject]];
-                    
-                    //  Based on the selected answer lead the user to the correct step
-                    switch (index) {
-                        case 0:
-                        {
-                            stepIndex = [kReasonsTwoStepIndex integerValue];
-                            break;
-                        }
-                        default:
-                            break;
-                    }
-                }
-            }
-        }
-        
-        return stepIndex;
-    };
-    
-    NSInteger(^DetermineNextStep)(ORKStep*, ORKTaskResult*) = ^NSInteger(ORKStep* step, ORKTaskResult* result)
-    {
-        NSInteger stepIndex = 0;
-        
-        if (step != nil)
-        {
-            if (self.steps.count > 1)
-            {
-                //  Determine the level or depth of the step
-                NSInteger depth = DetermineStepDepth(step, result);
-                
-                //  Get the result, find the step identifier in steps corresponding to logical next step
-                //  Pass back the index.
-                switch (depth) {
-                    case 1:
-                    {
-                        //  Always the second index!
-                        stepIndex = [kUserProgressStepIndex integerValue];
-                        
-                        break;
-                    }
-                    case 2:
-                    {
-                        stepIndex = DepthTwoResult(step, result);
-                        
-                        break;
-                    }
-                    case 3:
-                    {
-                        stepIndex = DepthThreeResult(step, result);
-                        
-                        break;
-                    }
-                    case 4:
-                    {
-                        stepIndex = kNegativeStepIndex;
-                        
-                        break;
-                    }
-                        
-                    default:
-                    {
-                        stepIndex = kNegativeStepIndex;
-                        
-                        break;
-                    }
-                }
-            }
-            else
-            {
-                stepIndex = kNegativeStepIndex;
-            }
-        }
-        
-        return stepIndex;
-    };
-    
-    stepIndex = DetermineNextStep(step, result);
-    
-    if (stepIndex < 0)
-    {
-        step = nil;
-    }
-    else
-    {
-        step = self.steps[stepIndex];
-    }
-    
-    return step;
-}
-
-- (nullable ORKStep *)stepBeforeStep:(nullable ORKStep *)step withResult:(ORKTaskResult *) __unused result
-{
-    NSInteger stepIndex = [kInstructionStepIndex integerValue];
-
-    if ([step.identifier isEqualToString:kInstructionStepID])
-    {
-        stepIndex = kNegativeStepIndex;
-    }
-    else if ([step.identifier isEqualToString:kUserProgressStepID])
-    {
-        stepIndex = [kInstructionStepIndex integerValue];;
-    }
-    else if ([step.identifier isEqualToString:kUserSucceededStepID] || [step.identifier isEqualToString:kUserFailedStepID] || [step.identifier isEqualToString:kUserUncertainID])
-    {
-         stepIndex = [kUserProgressStepIndex integerValue];
-    }
-    else if ([step.identifier isEqualToString:kUserInputStepID])
-    {
-        stepIndex = [kUserFailedStepIndex integerValue];
-    }
-    else if ([step.identifier isEqualToString:kReasonsStepID])
-    {
-        stepIndex = [kUserFailedStepIndex integerValue];
-    }
-    else if ([step.identifier isEqualToString:kReasonsTwoStepID])
-    {
-        stepIndex = [kUserUncertainIndex integerValue];
-    }
-    
-    if (stepIndex < 0)
-    {
-        step = nil;
-    }
-    else
-    {
-        step = self.steps[stepIndex];
-    }
-    
-    return step;
 }
 
 @end
