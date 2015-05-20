@@ -317,7 +317,7 @@ static NSInteger const kMaxTextInput        = 300;
         [self setNavigationRule:navigationRule forTriggerStepIdentifier:kUserFailedStepID];
         
         // End task after kUserSucceededStepID and kUserInputStepID (it already automatically ends after kReasonsStepID)
-        navigationRule = [[ORKDirectStepNavigationRule alloc] initWithDestinationStepIdentifier:nil];
+        navigationRule = [[ORKDirectStepNavigationRule alloc] initWithDestinationStepIdentifier:ORKNullStepIdentifier];
         [self setNavigationRule:navigationRule forTriggerStepIdentifier:kUserSucceededStepID];
         [self setNavigationRule:navigationRule forTriggerStepIdentifier:kUserInputStepID];
     }
