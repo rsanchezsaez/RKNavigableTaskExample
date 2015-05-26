@@ -284,7 +284,7 @@ static NSInteger const kMaxTextInput        = 300;
     if (self) {
 
         NSArray *resultPredicates = nil;
-        NSArray *matchingStepIdentifiers = nil;
+        NSArray *destinationStepIdentifiers = nil;
         ORKStepNavigationRule *navigationRule = nil;
         
         // Depth 2
@@ -294,12 +294,12 @@ static NSInteger const kMaxTextInput        = 300;
                                                                                         expectedString:kUserFailedChoice],
                               [ORKResultPredicate predicateForChoiceQuestionResultWithResultIdentifier:kUserProgressStepID
                                                                                         expectedString:kUserUncertainChoice] ];
-        matchingStepIdentifiers = @[ kUserSucceededStepID,
-                                     kUserFailedStepID,
-                                     kUserUncertainID ];
+        destinationStepIdentifiers = @[ kUserSucceededStepID,
+                                        kUserFailedStepID,
+                                        kUserUncertainID ];
         
         navigationRule = [[ORKPredicateStepNavigationRule alloc] initWithResultPredicates:resultPredicates
-                                                                  matchingStepIdentifiers:matchingStepIdentifiers];
+                                                               destinationStepIdentifiers:destinationStepIdentifiers];
         
         [self setNavigationRule:navigationRule forTriggerStepIdentifier:kUserProgressStepID];
         
@@ -308,11 +308,11 @@ static NSInteger const kMaxTextInput        = 300;
                                                                                         expectedString:kUserReasonsChoice],
                               [ORKResultPredicate predicateForChoiceQuestionResultWithResultIdentifier:kUserFailedStepID
                                                                                         expectedString:kUserInformation] ];
-        matchingStepIdentifiers = @[ kReasonsStepID,
-                                     kUserInputStepID ];
+        destinationStepIdentifiers = @[ kReasonsStepID,
+                                        kUserInputStepID ];
         
         navigationRule = [[ORKPredicateStepNavigationRule alloc] initWithResultPredicates:resultPredicates
-                                                                  matchingStepIdentifiers:matchingStepIdentifiers];
+                                                               destinationStepIdentifiers:destinationStepIdentifiers];
      
         [self setNavigationRule:navigationRule forTriggerStepIdentifier:kUserFailedStepID];
         
